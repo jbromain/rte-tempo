@@ -58,10 +58,16 @@
 			}
 
 			hr {
+
+
 				border: none;
 				border-top: 1px solid rgba(255, 255, 255, 0.5);
 				margin-top: 20vh;
 				margin-bottom: 8vh;
+			}
+			p.clear {
+				clear: both;
+				margin: 0;
 			}
 
 			section {
@@ -76,6 +82,7 @@
 			section.full-width + section {
 				clear: left;
 			}
+
 			@media(max-width: 1000px) {
 				/* Pas de colonnes en smartphone ou tablette */
 				section:not(.full-width) {
@@ -95,6 +102,15 @@
 			a {
 				color: white;
 				text-decoration: underline;
+
+
+			}
+			footer {
+				font-weight: lighter;
+				color: rgba(255, 255, 255, 0.7);
+				font-size: 0.8em;
+				text-align: center;
+				margin-top: 20vh;
 			}
 		</style>
 
