@@ -1,0 +1,39 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}API couleur Tempo: tarifs électricité offre Tempo EDF
+{% endblock %}
+
+{% block body %}
+	<h1>Couleur du tarif d'électricité Tempo par API</h1>
+	<p>Obtenez la couleur du jour, du lendemain, et accédez à l'historique du calendrier Tempo. Grâce à cette API simple d'utilisation et gratuite, intégrez en quelques minutes la couleur du jour Tempo à vos applications et services.</p>
+
+	<section>
+		<h2>Comment accéder au tarif Tempo ?</h2>
+		<p>L'API est accessible en HTTPs et fournit les réponses au format JSON. Elle est gratuite et ne nécessite pas d'authentification.</p>
+	</section>
+
+	<section>
+		<h2>D'où viennent les données de couleur des jours ?</h2>
+		<p>RTE publie quotidiennement la couleur tarifaire du lendemain, vers 11h du matin. Cette API demande cette information à RTE (une seule fois) et la mémorise pour la mettre à disposition de tous.</p>
+	</section>
+
+	<section class="full-width">
+		<h2>Pourquoi utiliser cette API plutôt que les ressources open data officielles ?</h2>
+		<p>Les API officiels du réseau d'électricité sont instables et changent souvent de fonctionnement. De plus, elles imposent des restrictions d'accès contraignantes et sont souvent indisponibles. Ce service crée un tampon entre le producteur de la donnée (RTE) et vous, ré-utilisateur, pour simplifier et fiabiliser l'accès à l'information.</p>
+		<p>En utilisant cette API, vous permettez également d'alléger la charge de trafic sur les serveurs RTE, et contribuez ainsi à rendre l'information disponible à d'autres usagers.</p>
+	</section>
+
+	<section>
+		<h2>Documentation</h2>
+		<p>La documentation de l'API est accessible à cette adresse:
+			<a href="/api">https://www.api-couleur-tempo.fr/api</a>
+		</p>
+	</section>
+
+	<section>
+		<h2>Contribuer au projet</h2>
+		<p>Le code source de cette API est disponible sur Github, soyez les bienvenus si vous souhaitez proposer des évolutions. Vous pouvez également me
+			<a href="https://www.buymeacoffee.com/jbromain25">payer un café</a>
+			pour soutenir le développement de ce service, et notamment participer aux frais d'hébergement.</p>
+	</section>
+{% endblock %}

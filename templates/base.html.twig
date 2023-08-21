@@ -1,16 +1,78 @@
 <!DOCTYPE html>
 <html>
-    <head>
-        <meta charset="UTF-8">
-        <title>{% block title %}Welcome!{% endblock %}</title>
-        <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 128 128%22><text y=%221.2em%22 font-size=%2296%22>⚫️</text></svg>">
-        {% block stylesheets %}
-        {% endblock %}
+	<head>
+		<meta charset="UTF-8">
+		<title>
+			{% block title %}Welcome!
+			{% endblock %}
+		</title>
+		<meta name="description" content="Couleur du tarif d'électricité Tempo (bleu, blanc ou rouge) par API. Accès direct et sans inscription.">
 
-        {% block javascripts %}
-        {% endblock %}
-    </head>
-    <body>
-        {% block body %}{% endblock %}
-    </body>
+		<link rel="preconnect" href="https://fonts.googleapis.com">
+		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+		<link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,300;0,400;1,300;1,400&display=swap" rel="stylesheet"> {% block stylesheets %}{% endblock %}{% block javascripts %}{% endblock %}
+		<style>
+			body {
+				background-color: #202125;
+				color: white;
+				font-family: 'Roboto', sans-serif;
+
+				padding: 30vh 10vw;
+			}
+
+
+			h1 {
+				text-align: center;
+				font-weight: lighter;
+				font-size: 2.5em;
+			}
+			h1 + p {
+				font-weight: lighter;
+				font-size: 1.2em;
+				text-align: justify;
+				line-height: 1.5em;
+				max-width: 650px;
+				margin-left: auto;
+				margin-right: auto;
+				margin-bottom: 30vh;
+			}
+
+			section {
+				padding: 30px;
+				box-sizing: border-box;
+			}
+			section:not(.full-width) {
+				width: 50%;
+				float: left;
+			}
+			section.full-width,
+			section.full-width + section {
+				clear: left;
+			}
+			@media(max-width: 1000px) {
+				/* Pas de colonnes en smartphone ou tablette */
+				section:not(.full-width) {
+					width: 100%;
+				}
+			}
+			h2 {
+				font-weight: lighter;
+
+			}
+			section p {
+				font-weight: lighter;
+				line-height: 1.5em;
+				font-size: 1em;
+				text-align: justify;
+			}
+			a {
+				color: white;
+				text-decoration: underline;
+			}
+		</style>
+
+	</head>
+	<body>
+		{% block body %}{% endblock %}
+	</body>
 </html>
