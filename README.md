@@ -6,12 +6,17 @@ Cette API donne un accès facile aux codes couleurs tarifaires de l'offre d'éle
 
 Ce projet constitue le serveur de l'API. Vous n'avez pas à le cloner pour utiliser l'API, voir ci-dessous.
 
-# Utilisation
+# Utilisation de l'API
 
 L'API et la documentation sont accessibles à l'adresse suivante: TODO
 
 Ce site est mis à jour régulièrement avec ce projet RTE-Tempo; seule la page d'accueil du site ne fait pas partie de ce repository.
 
-# Contribuer
+# Contribuer à l'API
 
 Si vous souhaitez contribuer à cette API ou émettre des suggestions, soyez les bienvenus !
+Vous pouvez:
+
+- Créer une Issue pour signaler un bug ou proposer des évolutions
+- Forker le projet et créer des PR
+- Me payer un café: https://www.buymeacoffee.com/jbromain25
