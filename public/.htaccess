@@ -1,0 +1,9 @@
+
+# Redirect non-www to www
+RewriteEngine On
+RewriteCond %{HTTP_HOST} ^api-couleur-tempo\.fr [NC]
+RewriteRule ^(.*)$ https://www.api-couleur-tempo/$1 [L,R=301]
+
+# Redirect to ssl
+RewriteCond %{HTTPS} !=on
+RewriteRule ^(.*)$ https://www.api-couleur-tempo/$1 [L,R=301]
