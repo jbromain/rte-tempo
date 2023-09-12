@@ -8,9 +8,9 @@ Ce projet constitue le serveur de l'API. Vous n'avez pas à le cloner pour utili
 
 # Utilisation de l'API
 
-L'API et la documentation sont accessibles à l'adresse suivante: TODO
+L'API et la documentation sont accessibles à l'adresse suivante: https://www.api-couleur-tempo.fr
 
-Ce site est mis à jour régulièrement avec ce projet RTE-Tempo; seule la page d'accueil du site ne fait pas partie de ce repository.
+Ce site est mis à jour régulièrement avec ce projet RTE-Tempo.
 
 # Contribuer à l'API
 
