@@ -12,6 +12,8 @@ use ApiPlatform\Metadata\GetCollection;
 use App\Repository\JourTempoRepository;
 use ApiPlatform\OpenApi\Model\Operation;
 use ApiPlatform\Doctrine\Orm\Filter\SearchFilter;
+use App\Controller\GetTodayController;
+use App\State\SingleDayTempoProvider;
 
 define("TARIF_INCONNU", 0);
 define("TARIF_BLEU", 1);
@@ -28,10 +30,28 @@ define("TARIF_ROUGE", 3);
 #[ApiResource(
     operations: [
         new Get(
+            name: 'getToday',
+            uriTemplate: 'jourTempo/today',
+            provider: SingleDayTempoProvider::class,
+            openapi: new Operation(
+                summary: "Retourne les informations Tempo pour aujourd'hui.",
+                description: "Cette méthode ne nécessite aucun paramètre et renvoie simplement les données pour aujourd'hui.\n\nCliquez sur 'Try it out' pour expérimenter et obtenir le code correspondant."
+            )
+        ),
+        new Get(
+            name: 'getTomorrow',
+            uriTemplate: 'jourTempo/tomorrow',
+            provider: SingleDayTempoProvider::class,
+            openapi: new Operation(
+                summary: "Retourne les informations Tempo pour demain.",
+                description: "Cette méthode ne nécessite aucun paramètre et renvoie simplement les données pour demain.\n\nNotez que les donnée du lendemain sont susceptibles de ne pas être encore disponible (code jour à 0); elles peuvent également ne pas être définitives (changement possible jusqu'à 12h environ).\n\nCliquez sur 'Try it out' pour expérimenter et obtenir le code correspondant."
+            )
+        ),
+        new Get(
             uriTemplate: '/jourTempo/{dateJour}',
             openapi: new Operation(
                 summary: "Retourne les informations Tempo d'une date donnée.",
-                description: "C'est probablement la méthode la plus courante à utiliser, pour obtenir chaque jour la couleur tarifaire du lendemain.\n\nSpécifiez simplement la date souhaitée au format AAAA-MM-JJ.\n\nNotez que les donnée du lendemain sont susceptibles de ne pas être encore disponible (code jour à 0); elles peuvent également ne pas être définitives (changement possible jusqu'à 12h environ).\n\nCliquez sur 'Try it out' pour expérimenter et obtenir le code correspondant."
+                description: "Spécifiez simplement la date souhaitée au format AAAA-MM-JJ.\n\nNotez que les donnée du lendemain sont susceptibles de ne pas être encore disponible (code jour à 0); elles peuvent également ne pas être définitives (changement possible jusqu'à 12h environ).\n\nCliquez sur 'Try it out' pour expérimenter et obtenir le code correspondant."
             )
         ),
         new GetCollection(
@@ -59,6 +79,7 @@ class JourTempo
             'format' => 'date',
             'example' => '2023-11-08'
         ],
+
         identifier: true
     )]
     /**
