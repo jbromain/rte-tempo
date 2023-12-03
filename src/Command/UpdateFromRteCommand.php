@@ -138,6 +138,7 @@ class UpdateFromRteCommand extends Command
         foreach ($json['values'] as $dateSQL => $colorName) {
             // On ignore les clés qui ne sont pas au bon format
             if (!preg_match('/^[0-9]{4}-[0-9]{2}-[0-9]{2}$/', $dateSQL)) {
+                echo "On ignore $dateSQL \n";
                 // On ignore 
                 continue;
             }

@@ -28,6 +28,8 @@ define("TARIF_ROUGE", 3);
 
 #[ORM\Entity(repositoryClass: JourTempoRepository::class)]
 #[ApiResource(
+    order: ['dateJour' => 'ASC'],
+    paginationEnabled: false,
     operations: [
         new Get(
             name: 'getToday',
@@ -58,7 +60,7 @@ define("TARIF_ROUGE", 3);
             uriTemplate: '/joursTempo',
             openapi: new Operation(
                 summary: "Retourne les informations d'un ou plusieurs jours selon les critères de filtrages fournis.",
-                description: "Cette méthode plus complexe permet de récupérer les informations de plusieurs jours en une seule requête.\n\nSpécifiez les critères de recherche, par exemple une date ou un ensemble de dates, afin d'obtenir les informations correspondantes.\n\nCliquez sur 'Try it out' pour expérimenter et obtenir le code correspondant."
+                description: "Cette méthode plus complexe permet de récupérer les informations de plusieurs jours en une seule requête.\n\nSpécifiez les critères de recherche, par exemple une date ou un ensemble de dates, afin d'obtenir les informations correspondantes.\n\nLes données sont retournées dans l'ordre chronologique.\n\nCliquez sur 'Try it out' pour expérimenter et obtenir le code correspondant."
             )
         )
     ]
