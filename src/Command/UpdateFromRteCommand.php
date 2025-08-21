@@ -170,7 +170,7 @@ class UpdateFromRteCommand extends Command
                 continue;
             }
 
-            $dataDay->setCodeJour($this->getCodeFromColorName($newCodeCouleur));
+            $dataDay->setCodeJour($newCodeCouleur);
         }
 
 
