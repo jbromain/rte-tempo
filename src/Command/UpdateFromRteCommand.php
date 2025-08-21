@@ -163,7 +163,14 @@ class UpdateFromRteCommand extends Command
                     ->setPeriode($periodeDay[0] . '-' . $periodeDay[1]);
                 $this->em->persist($dataDay);
             }
-            $dataDay->setCodeJour($this->getCodeFromColorName($colorName));
+
+            // Si on a forcé une couleur pour cette date et que l'API nous envoie 0, on ignore
+            $newCodeCouleur = $this->getCodeFromColorName($colorName);
+            if($newCodeCouleur == 0 && $dataDay->getCodeJour() > 0) {
+                continue;
+            }
+
+            $dataDay->setCodeJour($this->getCodeFromColorName($newCodeCouleur));
         }
 
 
