@@ -25,10 +25,10 @@ DirectoryIndex index.php
     RewriteCond %{HTTP_HOST} ^api-couleur-tempo\.fr [NC]
     RewriteRule ^(.*)$ https://www.api-couleur-tempo.fr/$1 [L,R=301]
 
-    # Redirect to ssl
+    # Redirect to ssl (accueil uniquement)
     RewriteCond %{HTTPS} !=on
-    RewriteCond %{REQUEST_URI} !^/api/
-    RewriteRule ^(.*)$ https://www.api-couleur-tempo.fr/$1 [L,R=301]
+    RewriteCond %{REQUEST_URI} ^/$
+    RewriteRule ^ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
 
     # Determine the RewriteBase automatically and set it as environment variable.
     # If you are using Apache aliases to do mass virtual hosting or installed the
