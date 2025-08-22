@@ -27,6 +27,7 @@ DirectoryIndex index.php
 
     # Redirect to ssl
     RewriteCond %{HTTPS} !=on
+    RewriteCond %{REQUEST_URI} !^/api/
     RewriteRule ^(.*)$ https://www.api-couleur-tempo.fr/$1 [L,R=301]
 
     # Determine the RewriteBase automatically and set it as environment variable.
