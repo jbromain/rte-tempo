@@ -12,7 +12,6 @@ use ApiPlatform\Metadata\GetCollection;
 use App\Repository\JourTempoRepository;
 use ApiPlatform\OpenApi\Model\Operation;
 use ApiPlatform\Doctrine\Orm\Filter\SearchFilter;
-use App\Controller\GetTodayController;
 use App\State\SingleDayTempoProvider;
 
 define("TARIF_INCONNU", 0);
@@ -79,7 +78,7 @@ class JourTempo
         openapiContext: [
             'type' => 'string',
             'format' => 'date',
-            'example' => '2023-11-08'
+            'example' => '2024-11-08'
         ],
 
         identifier: true
@@ -93,11 +92,11 @@ class JourTempo
 
     #[ORM\Column(type: Types::SMALLINT)]
     /**
-     * Code couleur du tarif Tempo applicable:
-     * 0: tarif inconnu (pas encore communiqué par RTE)
-     * 1: tarif bleu
-     * 2: tarif blanc
-     * 3: tarif rouge
+     * Code couleur du tarif Tempo applicable. Il s'agit de la couleur tarifaire applicable à partir de 6h du matin du jour indiqué, jusqu'au lendemain à 6h. Valeurs possibles:
+     * - 0: tarif inconnu (pas encore communiqué par RTE)
+     * - 1: tarif bleu
+     * - 2: tarif blanc
+     * - 3: tarif rouge
      */
     private ?int $codeJour = null;
 
@@ -105,13 +104,22 @@ class JourTempo
     #[ApiProperty(
         openapiContext: [
             'type' => 'string',
-            'example' => '2023-2024'
+            'example' => '2025-2026'
         ]
     )]
     /**
      * La période est l'année Tempo à laquelle ce jour appartient. Les périodes vont du 1er septembre au 31 août. La période est retournée au format AAAA-AAAA, par exemple '2023-2024'.
      */
     private string $periode;
+
+    
+    /*#[ApiProperty(
+        openapiContext: [
+            'type' => 'string',
+            'example' => 'Bleu'
+        ]
+    )]
+    private string $libCouleur = "salut";*/
 
 
     public function getId(): ?int
@@ -153,5 +161,28 @@ class JourTempo
         $this->periode = $periode;
 
         return $this;
+    }
+
+    #[ApiProperty(
+        openapiContext: [
+            'type' => 'string',
+            'example' => 'Bleu'
+        ]
+    )]
+    /**
+     * Libellé de la couleur en toutes lettres, parmi Inconnu, Bleu, Blanc, Rouge.
+     */
+    public function getLibCouleur(): string
+    {
+       switch($this->codeJour) {
+           case 1:
+               return 'Bleu';
+           case 2:
+               return 'Blanc';
+           case 3:
+               return 'Rouge';
+           default:
+               return 'Inconnu';
+       }
     }
 }
