@@ -4,18 +4,15 @@ namespace App\Command;
 
 use App\Entity\JourTempo;
 use App\Repository\JourTempoRepository;
-use \DateTime;
+use App\Service\DateService;
 use DateTimeImmutable;
-use \DateTimeInterface;
 use Doctrine\ORM\EntityManagerInterface;
 use Exception;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
-use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
-use Symfony\Component\Console\Style\SymfonyStyle;
 
 /**
  * URL de la page web officielle du site RTE sur laquelle le calendrier Tempo est visible.
@@ -30,7 +27,7 @@ define("RTE_WEBPAGE_URL", "https://www.services-rte.com/fr/visualisez-les-donnee
 define("RTE_API_URL", "https://www.services-rte.com/cms/open_data/v1/tempo?season=");
 
 /**
- * Nb: cette commande n'utiise pas pour l'instant l'API officielle car elle semble souffir de nombreux bugs.
+ * Nb: cette commande n'utilise pas pour l'instant l'API officielle car elle semble souffir de nombreux bugs.
  * Documentation de l'API officielle: https://data.rte-france.com/catalog/-/api/consumption/Tempo-Like-Supply-Contract/v1.1
  * 
  * @author JB Romain jbromain25@gmail.com
@@ -38,14 +35,14 @@ define("RTE_API_URL", "https://www.services-rte.com/cms/open_data/v1/tempo?seaso
 
 #[AsCommand(
     name: 'app:update-from-rte',
-    description: 'Appelée en tâche cron 2 fois par jour, met à jour les données à partir de l\'API RTE. Ne nécessite aucun argument.',
+    description: 'Appelée en tâche cron quelques fois par jour, met à jour les données à partir de l\'API RTE. Ne nécessite aucun argument.',
 )]
 class UpdateFromRteCommand extends Command
 {
 
     private JourTempoRepository $jourTempoRepository;
     private EntityManagerInterface $em;
-    public function __construct(JourTempoRepository $jourTempoRepository, EntityManagerInterface $em)
+    public function __construct(JourTempoRepository $jourTempoRepository, EntityManagerInterface $em, private DateService $dateService)
     {
         parent::__construct();
         $this->jourTempoRepository = $jourTempoRepository;
@@ -72,20 +69,18 @@ class UpdateFromRteCommand extends Command
                 'dateJour' => $day->format('Y-m-d')
             ]);
             if (!$dataDay) {
-                $periodeDay = $this->getPeriodeOfDay($day);
                 $dataDay = new JourTempo();
                 $dataDay
                     ->setDateJour($day)
                     ->setCodeJour(0)
-                    ->setPeriode($periodeDay[0] . '-' . $periodeDay[1]);
+                    ->setPeriode($this->dateService->getPeriodeOfDayAsString($day));
                 $this->em->persist($dataDay);
             }
         }
         $this->em->flush();
 
         // Détermination de la période à interroger (ce qui nous intéresse, c'est demain)
-        $periode = $this->getPeriodeOfDay(new DateTimeImmutable('tomorrow'));
-        $libPeriode = $periode[0] . '-' . $periode[1];
+        $libPeriode = $this->dateService->getPeriodeOfDayAsString(new DateTimeImmutable('tomorrow'));
 
         // Sauf si la période a été fournie en argument de la commande (cas particulier pour récupérer les anciennes données)
         $periodeParam = trim($input->getArgument('periode'));
@@ -156,11 +151,10 @@ class UpdateFromRteCommand extends Command
             ]);
             if (!$dataDay) {
                 // Première fois que RTE nous transmet une info pour cette date
-                $periodeDay = $this->getPeriodeOfDay($day);
                 $dataDay = new JourTempo();
                 $dataDay
                     ->setDateJour($day)
-                    ->setPeriode($periodeDay[0] . '-' . $periodeDay[1]);
+                    ->setPeriode($this->dateService->getPeriodeOfDayAsString($day));
                 $this->em->persist($dataDay);
             }
 
@@ -199,31 +193,6 @@ class UpdateFromRteCommand extends Command
                 return 3;
             default:
                 return 0;
-        }
-    }
-
-    /**
-     * Retourne la période Tempo à laquelle partient le jour fourni.
-     * Le résultat est un tableau de deux entiers, par exemple [2023, 2024].
-     * Les périodes Tempo vont du 1er septembre au 31 août de l'année suivante.
-     * 
-     * @param DateTimeInterface $day Jour dont on souhaitre connaitre la période
-     * @return array Tableau au format [2023, 2024]
-     */
-    private function getPeriodeOfDay(DateTimeInterface $day): array
-    {
-        if ($day->format('m-d') <= '08-31') {
-            // Du 1er janvier au 31 août inclus: Saison = N-1 / N
-            return [
-                ((int) $day->format('Y')) - 1,
-                (int) $day->format('Y')
-            ];
-        } else {
-            // 1er septembre au 31 décembre inclus: Saison = N / N+1
-            return [
-                (int) $day->format('Y'),
-                ((int) $day->format('Y')) + 1
-            ];
         }
     }
 }

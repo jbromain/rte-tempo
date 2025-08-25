@@ -2,9 +2,12 @@
 
 namespace App\Repository;
 
+use ApiPlatform\OpenApi\Model\Parameter;
 use App\Entity\JourTempo;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\DBAL\ParameterType;
 use Doctrine\Persistence\ManagerRegistry;
+use PhpParser\Builder\Param;
 
 /**
  * @extends ServiceEntityRepository<JourTempo>
@@ -20,6 +23,46 @@ class JourTempoRepository extends ServiceEntityRepository
     {
         parent::__construct($registry, JourTempo::class);
     }
+
+    public function getNombreJoursRougesPlacesJusqua(string $libPeriode, string $dateJour): int {
+        return $this->createQueryBuilder('j')
+            ->select('count(j.id)')
+            ->andWhere('j.periode = :periode')
+            ->andWhere('j.dateJour <= :dateJour')
+            ->andWhere('j.codeJour = :codeRouge')
+            ->setParameter('periode', $libPeriode, ParameterType::STRING)
+            ->setParameter('dateJour', $dateJour, ParameterType::STRING)
+            ->setParameter('codeRouge', TARIF_ROUGE, ParameterType::INTEGER)
+            ->getQuery()
+            ->getSingleScalarResult();
+    }
+
+    public function getNombreJoursBlancsPlacesJusqua(string $libPeriode, string $dateJour): int {
+        return $this->createQueryBuilder('j')
+            ->select('count(j.id)')
+            ->andWhere('j.periode = :periode')
+            ->andWhere('j.dateJour <= :dateJour')
+            ->andWhere('j.codeJour = :codeBlanc')
+            ->setParameter('periode', $libPeriode, ParameterType::STRING)
+            ->setParameter('dateJour', $dateJour, ParameterType::STRING)
+            ->setParameter('codeBlanc', TARIF_BLANC, ParameterType::INTEGER)
+            ->getQuery()
+            ->getSingleScalarResult();
+    }
+
+    public function getNombreJoursBleusPlacesJusqua(string $libPeriode, string $dateJour): int {
+        return $this->createQueryBuilder('j')
+            ->select('count(j.id)')
+            ->andWhere('j.periode = :periode')
+            ->andWhere('j.dateJour <= :dateJour')
+            ->andWhere('j.codeJour = :codeBleu')
+            ->setParameter('periode', $libPeriode, ParameterType::STRING)
+            ->setParameter('dateJour', $dateJour, ParameterType::STRING)
+            ->setParameter('codeBleu', TARIF_BLEU, ParameterType::INTEGER)
+            ->getQuery()
+            ->getSingleScalarResult();
+    }
+
 
 //    /**
 //     * @return JourTempo[] Returns an array of JourTempo objects

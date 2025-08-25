@@ -112,16 +112,6 @@ class JourTempo
      */
     private string $periode;
 
-    
-    /*#[ApiProperty(
-        openapiContext: [
-            'type' => 'string',
-            'example' => 'Bleu'
-        ]
-    )]
-    private string $libCouleur = "salut";*/
-
-
     public function getId(): ?int
     {
         return $this->id;
