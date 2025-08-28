@@ -59,7 +59,7 @@ class Tarification
      * Information technique à usage interne.
      */
     #[ORM\Column]
-    private ?int $dataGouvId = null;
+    private ?int $dataGouvId = 0;
 
     /**
      * Indique si le tarif a été forcé coté API, c'est-à-dire s'il a été modifié manuellement.
@@ -69,7 +69,7 @@ class Tarification
      * sur la base officielle dès sa mise à jour.
      */
     #[ORM\Column(options:[ 'default' => false])]
-    private ?bool $tarifForce = null;
+    private ?bool $tarifForce = false;
 
     /**
      * Date de début des tarifs actuels.
