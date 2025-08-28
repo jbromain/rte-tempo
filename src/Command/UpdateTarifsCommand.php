@@ -100,6 +100,9 @@ class UpdateTarifsCommand extends Command
             $tarifGouv['DATE_DEBUT'] = sprintf('%s-%s-%s', $matches[1], $matches[3], $matches[2]);
         }
 
+        // On ignore la mise à jour si le tarif n'est pas encore applicable (publication anticipée)
+        // TODO
+
         // Mise à jour du tarif et enregistrement
         $localTarif->setDataGouvId($idTarif);
         $localTarif->setDateDebut($tarifGouv['DATE_DEBUT']);
