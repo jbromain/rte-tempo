@@ -1,6 +1,6 @@
 api_platform:
   title: "API d'accès aux données tarifaires Tempo EDF"
-  description: "Cette API donne un accès facile aux codes couleurs tarifaires de l'offre d'électricité Tempo en France, commercialisée par EDF (tarif réglementé, option Tempo). L'API fournit le code couleur du jour et du lendemain, ainsi que l'historique des couleurs depuis 2020."
+  description: "Cette API donne un accès facile aux codes couleurs tarifaires de l'offre d'électricité Tempo en France, commercialisée par EDF (tarif réglementé, option Tempo). L'API fournit le code couleur du jour et du lendemain, les tarifs TTC de l'électricité au Kwh, ainsi que l'historique des couleurs depuis 2020."
   version: "1.0.0"
   show_webby: false
 
@@ -14,8 +14,8 @@ api_platform:
     json:
       mime_types: ["application/json"]
 
-    jsonld:
-      mime_types: ["application/ld+json"]
+    #jsonld:
+    #  mime_types: ["application/ld+json"]
 
     html:
       mime_types: ["text/html"]

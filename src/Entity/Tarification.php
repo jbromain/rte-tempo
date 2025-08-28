@@ -2,7 +2,12 @@
 
 namespace App\Entity;
 
+use ApiPlatform\Metadata\ApiResource;
+use ApiPlatform\Metadata\Get;
+use ApiPlatform\OpenApi\Model\Operation;
+use ApiPlatform\Metadata\ApiProperty;
 use App\Repository\TarificationRepository;
+use App\State\TarificationProvider;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
@@ -11,45 +16,60 @@ use Doctrine\ORM\Mapping as ORM;
  * Les tarifs sont TTC.
  */
 #[ORM\Entity(repositoryClass: TarificationRepository::class)]
+#[ApiResource(
+    paginationEnabled: false,
+    operations: [
+        new Get(
+            name: 'getTarifs',
+            uriTemplate: 'tarifs',
+            provider: TarificationProvider::class,
+            openapi: new Operation(
+                summary: "Retourne les tarifs actuels de l'offre Tempo (prix au Kwh). Le prix des abonnements varie selon la puissance soucrite, il n'est pas fourni par cette API.",
+                description: "Cette méthode ne nécessite aucun paramètre et renvoie simplement les données tarifaires.\n\nCliquez sur 'Try it out' pour expérimenter et obtenir le code correspondant."
+            )
+        ),
+    ]
+)]
 class Tarification
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
+    #[ApiProperty(identifier: false, readable: false, writable: false)]
     private ?int $id = null;
 
     /**
-     * Tarif du kWh en heures creuses, jour bleu
+     * Tarif TTC du kWh en heures creuses, jour bleu
      */
     #[ORM\Column]
     private ?float $bleuHC = null;
 
     /**
-     * Tarif du kWh en heures pleines, jour bleu
+     * Tarif TTC du kWh en heures pleines, jour bleu
      */
     #[ORM\Column]
     private ?float $bleuHP = null;
 
     /**
-     * Tarif du kWh en heures creuses, jour blanc
+     * Tarif TTC du kWh en heures creuses, jour blanc
      */
     #[ORM\Column]
     private ?float $blancHC = null;
 
     /**
-     * Tarif du kWh en heures pleines, jour blanc
+     * Tarif TTC du kWh en heures pleines, jour blanc
      */
     #[ORM\Column]
     private ?float $blancHP = null;
 
     /**
-     * Tarif du kWh en heures creuses, jour rouge
+     * Tarif TTC du kWh en heures creuses, jour rouge
      */
     #[ORM\Column]
     private ?float $rougeHC = null;
 
     /**
-     * Tarif du kWh en heures pleines, jour rouge
+     * Tarif TTC du kWh en heures pleines, jour rouge
      */
     #[ORM\Column]
     private ?float $rougeHP = null;
@@ -74,8 +94,15 @@ class Tarification
     /**
      * Date de début des tarifs actuels.
      */
-    #[ORM\Column(type: Types::DATE_IMMUTABLE)]
-    private ?\DateTimeImmutable $dateDebut = null;
+    #[ORM\Column]
+    #[ApiProperty(
+        openapiContext: [
+            'type' => 'string',
+            'format' => 'date',
+            'example' => '2025-08-01'
+        ]
+    )]
+    private ?string $dateDebut = null;
 
     public function getId(): ?int
     {
@@ -178,12 +205,12 @@ class Tarification
         return $this;
     }
 
-    public function getDateDebut(): ?\DateTimeImmutable
+    public function getDateDebut(): ?string
     {
         return $this->dateDebut;
     }
 
-    public function setDateDebut(\DateTimeImmutable $dateDebut): static
+    public function setDateDebut(?string $dateDebut): static
     {
         $this->dateDebut = $dateDebut;
 

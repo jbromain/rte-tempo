@@ -36,7 +36,7 @@ define("TARIF_ROUGE", 3);
             provider: SingleDayTempoProvider::class,
             openapi: new Operation(
                 summary: "Retourne les informations Tempo pour aujourd'hui.",
-                description: "Cette méthode ne nécessite aucun paramètre et renvoie simplement les données pour aujourd'hui.\n\nCliquez sur 'Try it out' pour expérimenter et obtenir le code correspondant."
+                description: "Cette méthode ne nécessite aucun paramètre et renvoie simplement les données pour aujourd'hui (couleur tarifaire valable de 6h du matin jusqu'à 6h demain matin).\n\nCliquez sur 'Try it out' pour expérimenter et obtenir le code correspondant."
             )
         ),
         new Get(
@@ -45,14 +45,14 @@ define("TARIF_ROUGE", 3);
             provider: SingleDayTempoProvider::class,
             openapi: new Operation(
                 summary: "Retourne les informations Tempo pour demain.",
-                description: "Cette méthode ne nécessite aucun paramètre et renvoie simplement les données pour demain.\n\nNotez que les donnée du lendemain sont susceptibles de ne pas être encore disponible (code jour à 0); elles peuvent également ne pas être définitives (changement possible jusqu'à 12h environ).\n\nCliquez sur 'Try it out' pour expérimenter et obtenir le code correspondant."
+                description: "Cette méthode ne nécessite aucun paramètre et renvoie simplement les données pour demain (couleur tarifaire valable à partir de demain matin à 6h).\n\nNotez que les donnée du lendemain sont susceptibles de ne pas être encore disponible (code jour à 0); elles peuvent également ne pas être définitives (changement possible jusqu'à 12h environ).\n\nCliquez sur 'Try it out' pour expérimenter et obtenir le code correspondant."
             )
         ),
         new Get(
             uriTemplate: '/jourTempo/{dateJour}',
             openapi: new Operation(
                 summary: "Retourne les informations Tempo d'une date donnée.",
-                description: "Spécifiez simplement la date souhaitée au format AAAA-MM-JJ.\n\nNotez que les donnée du lendemain sont susceptibles de ne pas être encore disponible (code jour à 0); elles peuvent également ne pas être définitives (changement possible jusqu'à 12h environ).\n\nCliquez sur 'Try it out' pour expérimenter et obtenir le code correspondant."
+                description: "Spécifiez simplement la date souhaitée au format AAAA-MM-JJ. Le résultat indique la couleur tarifaire applicable à partir de 6h du matin le jour indiqué, jusqu'à 6h le lendemain.\n\nNotez que les donnée du lendemain sont susceptibles de ne pas être encore disponible (code jour à 0); elles peuvent également ne pas être définitives (changement possible jusqu'à 12h environ).\n\nCliquez sur 'Try it out' pour expérimenter et obtenir le code correspondant."
             )
         ),
         new GetCollection(

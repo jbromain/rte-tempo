@@ -15,7 +15,7 @@ use Symfony\Component\Console\Style\SymfonyStyle;
 
 /**
  * Cette commande met à jour les prix au Kwh de l'option Tempo depuis l'API:
- * https://tabular-api.data.gouv.fr/api/resources/0c3d1d36-c412-4620-8566-e5cbb4fa2b5a/data/?page_size=1&P_SOUSCRITE__exact=6&DATE_DEBUT__sort=desc
+ * https://tabular-api.data.gouv.fr/api/resources/0c3d1d36-c412-4620-8566-e5cbb4fa2b5a/data/?page_size=1&P_SOUSCRITE__exact=6&__id__sort=desc
  * 
  * Cette API automatique récupère elle-même les données depuis la donnée ouverte CSV:
  * https://www.data.gouv.fr/datasets/historique-des-tarifs-reglementes-de-vente-delectricite-pour-les-consommateurs-residentiels/#/resources/0c3d1d36-c412-4620-8566-e5cbb4fa2b5a
@@ -27,7 +27,7 @@ use Symfony\Component\Console\Style\SymfonyStyle;
 class UpdateTarifsCommand extends Command
 {
     
-    private const GOUV_URL = "https://tabular-api.data.gouv.fr/api/resources/0c3d1d36-c412-4620-8566-e5cbb4fa2b5a/data/?page_size=1&P_SOUSCRITE__exact=6&DATE_DEBUT__sort=desc";
+    private const GOUV_URL = "https://tabular-api.data.gouv.fr/api/resources/0c3d1d36-c412-4620-8566-e5cbb4fa2b5a/data/?page_size=1&P_SOUSCRITE__exact=6&__id__sort=desc";
 
     public function __construct(private TarificationRepository $tarificationRepository, private EntityManagerInterface $em)
     {
@@ -102,7 +102,7 @@ class UpdateTarifsCommand extends Command
 
         // Mise à jour du tarif et enregistrement
         $localTarif->setDataGouvId($idTarif);
-        $localTarif->setDateDebut(new \DateTimeImmutable($tarifGouv['DATE_DEBUT']));
+        $localTarif->setDateDebut($tarifGouv['DATE_DEBUT']);
         $localTarif->setBleuHC((float) $tarifGouv['PART_VARIABLE_HCBleu_TTC']);
         $localTarif->setBleuHP((float) $tarifGouv['PART_VARIABLE_HPBleu_TTC']);
         $localTarif->setBlancHC((float) $tarifGouv['PART_VARIABLE_HCBlanc_TTC']);
