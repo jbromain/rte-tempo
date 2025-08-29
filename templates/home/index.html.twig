@@ -13,6 +13,45 @@
 		</div>
 		<h1>Couleur du tarif d'électricité Tempo par API</h1>
 		<p>Obtenez la couleur du jour, du lendemain, et accédez à l'historique du calendrier Tempo. Grâce à cette API simple d'utilisation et gratuite, intégrez en quelques minutes la couleur du jour Tempo à vos applications et services.</p>
+
+		{% if today != null and tomorrow != null and now != null %}
+			<div id="data-preview">
+				<div class="one-data-preview">
+					<span class="title">Aujourd'hui</span>
+					<span class="url">/api/today</span>
+					<pre><code>{
+  "dateJour": "{{ today.dateJour }}",
+  "codeJour": {{ today.codeJour }},
+  "periode": "{{ today.periode }}",
+  "libCouleur": "{{ today.libCouleur }}"
+}</code></pre>
+				</div>
+				<div class="one-data-preview">
+					<span class="title">Demain</span>
+					<span class="url">/api/tomorrow</span>
+					<pre><code>{
+  "dateJour": "{{ tomorrow.dateJour }}",
+  "codeJour": {{ tomorrow.codeJour }},
+  "periode": "{{ tomorrow.periode }}",
+  "libCouleur": "{{ tomorrow.libCouleur }}"
+}</code></pre>
+				</div>
+				<div class="one-data-preview">
+					<span class="title">Maintenant</span>
+					<span class="url">/api/now</span>
+					<pre><code>{
+  "codeCouleur": {{ now.codeCouleur }},
+  "codeHoraire": {{ now.codeHoraire }},
+  "tarifKwh": {{ now.tarifKwh }},
+  "libTarif": "{{ now.libTarif }}"
+}</code></pre>
+				</div>
+
+			</div>
+		{% endif %}
+
+
+		<span id="fleche-bas">⮛</span>
 	</header>
 
 	<hr>
@@ -36,7 +75,7 @@
 	<section>
 		<h2>Documentation</h2>
 		<p>La documentation de l'API est accessible à cette adresse:
-			<a href="/api">https://www.api-couleur-tempo.fr/api</a>
+			<br><a href="/api">https://www.api-couleur-tempo.fr/api</a>
 		</p>
 	</section>
 

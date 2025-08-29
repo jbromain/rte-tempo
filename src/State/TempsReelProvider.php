@@ -23,6 +23,11 @@ class TempsReelProvider implements ProviderInterface
 
     public function provide(Operation $operation, array $uriVariables = [], array $context = []): object|array|null
     {
+        return $this->provideSimple();
+    }
+
+    public function provideSimple(): TempsReel
+    {
         // La donnée expire à chaque changement d'heure
         $cacheKey = date('Y-m-d H').':00:00';
 

@@ -2,6 +2,7 @@
 <html>
 	<head>
 		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
 		<title>
 			{% block title %}Welcome!
 			{% endblock %}
@@ -17,7 +18,7 @@
 				color: white;
 				font-family: 'Roboto', sans-serif;
 
-				padding: 20vh 10vw;
+				padding: 10vh 10vw;
 			}
 			.couleurs {
 				text-align: center;
@@ -57,12 +58,39 @@
 
 			}
 
+			.one-data-preview {
+				max-width: 350px;
+				display: inline-block;
+				margin: 0 1.5em;
+				text-align: left;
+				padding: 20px;
+				border: 1px solid white;
+				border-radius: 20px;
+			}
+			#data-preview {
+				margin-top: 4em;
+				text-align: center;
+			}
+			.one-data-preview span.url {
+				text-decoration: underline dotted;
+				margin-left: 10px;
+			}
+			pre {
+				margin-bottom: 0;
+			}
+			span#fleche-bas {
+				display: block;
+				text-align: center;
+				margin-top: 20px;
+				font-size: 4em;
+			}
+
 			hr {
 
 
 				border: none;
 				border-top: 1px solid rgba(255, 255, 255, 0.5);
-				margin-top: 20vh;
+				margin-top: 10vh;
 				margin-bottom: 8vh;
 			}
 			p.clear {
@@ -87,6 +115,14 @@
 				/* Pas de colonnes en smartphone ou tablette */
 				section:not(.full-width) {
 					width: 100%;
+				}
+				.one-data-preview {
+					max-width: none;
+					margin-bottom: 1em;
+					width: 100%;
+					box-sizing: border-box;
+					margin-left: 0;
+					margin-right: 0;
 				}
 			}
 			h2 {
