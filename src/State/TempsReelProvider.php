@@ -41,7 +41,7 @@ class TempsReelProvider implements ProviderInterface
         $this->logger->info("Calcul du tarif temps réel pour $cacheKey");
 
         $dt = new DateTime($cacheKey);
-        if((int) $dt->format('G') < 26) {
+        if((int) $dt->format('G') < 6) {
             // Avant 6h, on prend la veille
             $dt->modify('-1 day');
         }
@@ -67,6 +67,21 @@ class TempsReelProvider implements ProviderInterface
                     $tr->setTarifKwh($isHP?$tarif->getRougeHP():$tarif->getRougeHC());
                     break;
             }
+        }
+
+        // Calcul du libellé tarifaire
+        switch($tr->getCodeCouleur()) {
+            case TARIF_BLEU:
+                $tr->setLibTarif($isHP?"Bleu-HP":"Bleu-HC");
+                break;
+            case TARIF_BLANC:
+                $tr->setLibTarif($isHP?"Blanc-HP":"Blanc-HC");
+                break;
+            case TARIF_ROUGE:
+                $tr->setLibTarif($isHP?"Rouge-HP":"Rouge-HC");
+                break;
+            default:
+                $tr->setLibTarif($isHP?"Inconnu-HP":"Inconnu-HC");
         }
 
         return $tr;

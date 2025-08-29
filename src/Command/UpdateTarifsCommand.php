@@ -101,7 +101,10 @@ class UpdateTarifsCommand extends Command
         }
 
         // On ignore la mise à jour si le tarif n'est pas encore applicable (publication anticipée)
-        // TODO
+        if($tarifGouv['DATE_DEBUT'] > date('Y-m-d')){
+            $io->warning('Le tarif avec l\'ID ' . $idTarif . ' n\'est pas encore applicable (date de début: ' . $tarifGouv['DATE_DEBUT'] . '). Aucune mise à jour effectuée.');
+            return Command::SUCCESS;
+        }
 
         // Mise à jour du tarif et enregistrement
         $localTarif->setDataGouvId($idTarif);
