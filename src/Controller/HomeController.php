@@ -23,4 +23,10 @@ class HomeController extends AbstractController
             'now' => $now,
         ]);
     }
+
+    #[Route('/nouveautes-2025-2026', name: 'nouveautes-2025-2026')]
+    public function new2025(): Response
+    {
+        return $this->render('changelog-2025.html.twig');
+    }
 }

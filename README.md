@@ -2,6 +2,8 @@
 
 Cette API donne un accès facile aux codes couleurs tarifaires de l'offre d'électricité Tempo en France, commercialisée par EDF (tarif réglementé, option Tempo). L'API fournit le code couleur du jour et du lendemain, ainsi que l'historique des couleurs depuis 2020.
 
+Les tarifs au Kwh sont également disponibles (sans historique). Les tarifs sont récupérés à partir des données ouvertes publiées par la Commission de Régulation de l'Energie (CRE).
+
 # Attention
 
 Ce projet constitue le serveur de l'API. Vous n'avez pas à le cloner pour utiliser l'API, voir ci-dessous.

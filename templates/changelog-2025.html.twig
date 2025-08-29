@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<title>API Couleur Tempo - Nouveautés saison 2025-2026</title>
+		<link rel="preconnect" href="https://fonts.googleapis.com">
+		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+		<link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,300;0,400;1,300;1,400&display=swap" rel="stylesheet">
+		<style>
+			body {
+				background-color: #202125;
+				color: white;
+				font-family: 'Roboto', sans-serif;
+
+				padding: 10vh 10vw;
+			}
+			a {
+				color: white;
+			}
+            div {
+                max-width: 950px;
+                margin:0 auto;
+            }
+            nav { margin-bottom:2em; }
+            h2 { margin-top:3em; }
+            h1 + p { font-size:1.2em; padding-left:0; }
+            p { padding-left:30px; position:relative; font-weight:300; line-height:1.3em; }
+            h2 + p::before { content: '>'; position:absolute; left:0; top:0; }
+		</style>
+	</head>
+	<body>
+		<div>
+            <nav>
+                <a href="/">Retour à l'accueil</a>
+            </nav>
+			<h1>Nouveautés API Couleur Tempo saison 2025-2026</h1>
+            <p>Voici un résumé des évolutions de l'API Couleur Tempo pour la saison 2025-2026.</p>
+			<h2>Ajout des tarifs par Kwh</h2>
+			<p>La nouvelle route /api/tarifs fournit les prix actuels au Kwh pour tous les détenteurs de l'offre d'électricité Tempo. Les tarifs sont mis à jour automatiquement à partir des données publiée par la Commission de Régulation de l'Energie.</p>
+			<p>Il n'y a pas d'historique, seuls les prix actuels sont intégrés à l'API.</p>
+			<h2>Ajout des couleurs en toutes lettres</h2>
+			<p>Pour permettre un affichage direct sans pré-traitement, les routes /api/today et /api/tomorrow contiennent désormais le libellé de la couleur applicable, en plus du code numérique.</p>
+			<h2>Ajout des statistiques jours consommés / jours restants</h2>
+			<p>La nouvelle route /api/stats indique le nombre de jours consommés et restants pour chaque couleur jusqu'à la fin de la période Tempo actuelle (31 août).</p>
+			<h2>Couleur et tarif en temps réel</h2>
+			<p>La nouvelle route /api/now indique la couleur actuellement applicable ainsi que le tarif par Kwh correspondant.</p>
+			<p>Contrairement à la route /api/today, qui retourne le code couleur applicable pour une journée Tempo (de 6h à 6h le lendemain), cette nouvelle route temps réel tient compte de l'heure d'appel: sa réponse s'adapte selon si on est en heures creuses ou en heures pleines, et la couleur applicable est celle de la veille s'il est moins de 6h du matin.</p>
+			<h2>Accès en HTTP non sécurisé</h2>
+			<p>Pour permettre une interrogation simplifiée par des dispositifs électroniques bas niveau, toutes les routes de l'API sont désormais accessibles également en http simple.</p>
+			<p>Si vous en avez la possibilité, il reste fortement recommandé de privilégier la version https.</p>
+			<h2>Contribuer à l'hébergement de l'API</h2>
+			<p>Cette API est développée sur mon temps libre; le prix de l'hébergement o2Switch sur laquelle elle repose a fortement augmenté. Afin de garantir la disponibilité de cet outil gratuit et accessible à tous, vous pouvez participer aux frais en
+				<a href="https://www.buymeacoffee.com/jbromain25">me payant un café</a>. Merci d'avance !</p>
+			<h2>Documentation améliorée</h2>
+			<p>La documentation de l'API a été améliorer pour lever certaines ambiguité sur son fonctionnement. Elle est disponible ici:
+				<a href="/api">https://www.api-couleur-tempo.fr/api</a>
+			</p>
+			<p>En cas de difficulté d'utilisation ou si vous rencontrez un bug, n'hésitez pas à me contacter via
+				<a href="https://github.com/jbromain/rte-tempo/">Github</a>
+				ou sur mon site
+				<a href="https://www.realdev.fr">https://www.realdev.fr</a>.</p>
+		</div>
+	</body>
+</html>
