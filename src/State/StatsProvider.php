@@ -25,19 +25,24 @@ class StatsProvider implements ProviderInterface
     public function provide(Operation $operation, array $uriVariables = [], array $context = []): object|array|null
     {
         $today = date('Y-m-d');
+        $cacheKey = 'stats-'.$today;
 
         // On vérifie si apcu_entry existe
         if (function_exists('apcu_entry')) {
             // Cache 1h, mais expire au changement de date
-            return apcu_entry($today, [$this, 'getStats'], 3600);
+            return apcu_entry($cacheKey, [$this, 'getStats'], 3600);
         } else {
             // Pas de cache, on calcule à chaque appel
-            return $this->getStats($today);
+            return $this->getStats($cacheKey);
         }
     }
 
-    private function getStats($dateSQL): Statistiques
+    /**
+     * @param string $cacheKey stats-YYYY-MM-DD
+     */
+    private function getStats($cacheKey): Statistiques
     {
+        $dateSQL = substr($cacheKey, 6);
         $this->logger->info("Calcul des statistiques pour $dateSQL");
 
         $stat = new Statistiques();
