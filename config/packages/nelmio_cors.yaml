@@ -13,8 +13,8 @@ nelmio_cors:
     "^/api/":
       allow_origin: ["*"]
       forced_allow_origin_value: "*"
-      allow_headers: ["Content-Type", "Authorization"]
-      allow_methods: ["GET", "OPTIONS", "POST", "PUT", "PATCH", "DELETE"]
+      allow_headers: ["Content-Type", "Authorization", "X-Requested-With", "X-App-Name"]
+      allow_methods: ["GET"]
       max_age: 3600
     "^/":
       origin_regex: true
