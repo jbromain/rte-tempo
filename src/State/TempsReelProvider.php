@@ -44,21 +44,39 @@ class TempsReelProvider implements ProviderInterface
     private function getTempsReel($cacheKey): TempsReel
     {
         $this->logger->info("Calcul du tarif temps réel pour $cacheKey");
+        return $this->getTempsReelForDateTime(new DateTime($cacheKey));
+    }
 
-        $dt = new DateTime($cacheKey);
-        if((int) $dt->format('G') < 6) {
-            // Avant 6h, on prend la veille
-            $dt->modify('-1 day');
+    /**
+     * Calcule le tarif temps réel pour une date/heure donnée.
+     * Peut être utilisé pour calculer des tarifs futurs.
+     */
+    public function getTempsReelForDateTime(DateTime $dt, ?object $jourTempo = null, ?object $tarif = null): TempsReel
+    {
+        $hour = (int) $dt->format('G');
+
+        // Règle Tempo : avant 6h, on prend la veille
+        $tempoDate = clone $dt;
+        if($hour < 6) {
+            $tempoDate->modify('-1 day');
         }
-        $dateTarif = $dt->format('Y-m-d');
-        $jourTempo = $this->jourTempoRepository->findOneBy(['dateJour' => $dateTarif]);
-        $tarif = $this->tarificationRepository->findOneBy([]);
-        $isHP = ((int) $dt->format('G') >= 6) && ((int) $dt->format('G') < 22);
+
+        // Récupérer le jour Tempo si non fourni
+        if($jourTempo === null) {
+            $jourTempo = $this->jourTempoRepository->findOneBy(['dateJour' => $tempoDate->format('Y-m-d')]);
+        }
+
+        // Récupérer le tarif si non fourni
+        if($tarif === null) {
+            $tarif = $this->tarificationRepository->findOneBy([]);
+        }
+
+        $isHP = ($hour >= 6) && ($hour < 22);
 
         $tr = new TempsReel();
         $tr->setCodeHoraire($isHP?1:0);
         $tr->setCodeCouleur($jourTempo?$jourTempo->getCodeJour():TARIF_INCONNU);
-        
+
         if($tarif != null && $tr->getCodeCouleur() != TARIF_INCONNU) {
             // On a un tarif et une couleur connue
             switch($tr->getCodeCouleur()) {
