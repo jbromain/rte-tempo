@@ -4,6 +4,8 @@ namespace App\State;
 
 use ApiPlatform\Metadata\Operation;
 use ApiPlatform\State\ProviderInterface;
+use App\Entity\JourTempo;
+use App\Entity\Tarification;
 use App\Entity\TempsReel;
 use App\Repository\JourTempoRepository;
 use App\Repository\TarificationRepository;
@@ -50,8 +52,12 @@ class TempsReelProvider implements ProviderInterface
     /**
      * Calcule le tarif temps réel pour une date/heure donnée.
      * Peut être utilisé pour calculer des tarifs futurs.
+     * 
+     * @param DateTime $dt Date/heure cible
+     * @param ?JourTempo $jourTempo Si déjà récupéré (optimisation)
+     * @param ?Tarification $tarif Si déjà récupéré (optimisation)
      */
-    public function getTempsReelForDateTime(DateTime $dt, ?object $jourTempo = null, ?object $tarif = null): TempsReel
+    public function getTempsReelForDateTime(DateTime $dt, ?JourTempo $jourTempo = null, ?Tarification $tarif = null): TempsReel
     {
         $hour = (int) $dt->format('G');
 

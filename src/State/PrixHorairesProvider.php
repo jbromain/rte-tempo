@@ -4,7 +4,6 @@ namespace App\State;
 
 use ApiPlatform\Metadata\Operation;
 use ApiPlatform\State\ProviderInterface;
-use App\Entity\PrixHoraires;
 use App\Repository\JourTempoRepository;
 use App\Repository\TarificationRepository;
 use DateTime;
@@ -41,14 +40,19 @@ class PrixHorairesProvider implements ProviderInterface
         }
     }
 
-    private function getPrixHoraires(string $cacheKey): PrixHoraires
+    /**
+     * @return TempsReel[]
+     */
+    private function getPrixHoraires(string $cacheKey): array
     {
         $this->logger->info("Calcul des prix horaires pour $cacheKey");
 
-        $prixHoraires = new PrixHoraires();
+        $prixHoraires = [];
         $tarif = $this->tarificationRepository->findOneBy([]);
+
+        // FIXME bug possible si appel pile à un changement d'heure
+        // (il faudrait prendre l'heure de la clé de cache)
         $now = new DateTime();
-        $currentHour = (int) $now->format('G');
 
         // Cache des jours Tempo pour éviter les requêtes multiples
         $joursTempoCache = [];
@@ -72,21 +76,15 @@ class PrixHorairesProvider implements ProviderInterface
             }
             $jourTempo = $joursTempoCache[$tempoDateStr];
 
-            // Si pas de jour Tempo ou couleur inconnue → null
-            if ($jourTempo === null || $jourTempo->getCodeJour() === TARIF_INCONNU) {
-                $prixHoraires->setHourData($n, null);
-                continue;
-            }
+            // Ici JourTempo n'est pas censé être null (ils sont initialisés à J-2)
+            if( $jourTempo === null ) {
+                $this->logger->error("JourTempo manquant pour la date " . $tempoDateStr);
+                break; // Tant pis s'il n'y a pas 24 entrées, mais on veut pas de trous
+            } 
 
             // Utiliser TempsReelProvider pour calculer le tarif
             $tr = $this->tempsReelProvider->getTempsReelForDateTime($targetDateTime, $jourTempo, $tarif);
-
-            $prixHoraires->setHourData($n, [
-                'codeCouleur' => $tr->getCodeCouleur(),
-                'codeHoraire' => $tr->getCodeHoraire(),
-                'tarifKwh' => $tr->getTarifKwh(),
-                'libTarif' => $tr->getLibTarif(),
-            ]);
+            $prixHoraires[$n] = $tr;
         }
 
         return $prixHoraires;
