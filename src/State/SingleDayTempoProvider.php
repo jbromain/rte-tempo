@@ -26,6 +26,9 @@ class SingleDayTempoProvider implements ProviderInterface
             case 'getTomorrow':
                 $dateJour = new DateTime('tomorrow');
                 break;
+            case 'getYesterday':
+                $dateJour = new DateTime('yesterday');
+                break;
             case 'getToday':
             default:
                 // Cas général (aujourd'hui)

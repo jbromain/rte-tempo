@@ -49,6 +49,15 @@ define("TARIF_ROUGE", 3);
             )
         ),
         new Get(
+            name: 'getYesterday',
+            uriTemplate: 'jourTempo/yesterday',
+            provider: SingleDayTempoProvider::class,
+            openapi: new Operation(
+                summary: "Retourne les informations Tempo pour hier.",
+                description: "Cette méthode ne nécessite aucun paramètre et renvoie simplement les données de la veille, à titre d'information (couleur tarifaire valable jusqu'à 6h ce matin).\n\nCliquez sur 'Try it out' pour expérimenter et obtenir le code correspondant."
+            )
+        ),
+        new Get(
             uriTemplate: '/jourTempo/{dateJour}',
             openapi: new Operation(
                 summary: "Retourne les informations Tempo d'une date donnée.",
