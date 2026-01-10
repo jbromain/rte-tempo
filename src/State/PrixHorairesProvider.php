@@ -19,8 +19,7 @@ class PrixHorairesProvider implements ProviderInterface
         private JourTempoRepository $jourTempoRepository,
         private TarificationRepository $tarificationRepository,
         private LoggerInterface $logger
-    ) {
-    }
+    ) {}
 
     public function provide(
         Operation $operation,
@@ -77,13 +76,14 @@ class PrixHorairesProvider implements ProviderInterface
             $jourTempo = $joursTempoCache[$tempoDateStr];
 
             // Ici JourTempo n'est pas censé être null (ils sont initialisés à J-2)
-            if( $jourTempo === null ) {
+            if ($jourTempo === null) {
                 $this->logger->error("JourTempo manquant pour la date " . $tempoDateStr);
                 break; // Tant pis s'il n'y a pas 24 entrées, mais on veut pas de trous
-            } 
+            }
 
             // Utiliser TempsReelProvider pour calculer le tarif
             $tr = $this->tempsReelProvider->getTempsReelForDateTime($targetDateTime, $jourTempo, $tarif);
+            $tr->setApplicableIn($n);
             $prixHoraires[$n] = $tr;
         }
 

@@ -52,6 +52,7 @@ class TempsReelProvider implements ProviderInterface
     /**
      * Calcule le tarif temps réel pour une date/heure donnée.
      * Peut être utilisé pour calculer des tarifs futurs.
+     * Attention, l'objet renvoyé n'affecte pas le champ applicableIn, c'est à l'appelant de le faire si besoin.
      * 
      * @param DateTime $dt Date/heure cible
      * @param ?JourTempo $jourTempo Si déjà récupéré (optimisation)

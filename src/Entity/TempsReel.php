@@ -39,6 +39,15 @@ use App\State\TempsReelProvider;
 class TempsReel
 {
     /**
+     * Indique à quoi correspond cette donnée horaire. Valeurs possibles:
+     * - 0: donnée pour l'heure en cours (de l'appel)
+     * - 1: donnée pour l'heure suivante
+     * - 2: donnée pour l'heure d'après
+     * - etc jusqu'à 23 (donnée pour l'heure 23 heures après l'appel)
+     */
+    private int $applicableIn = 0;
+
+    /**
      * Code couleur du tarif Tempo applicable. Il s'agit de la couleur tarifaire applicable. Valeurs possibles:
      * - 0: tarif inconnu (ne devrait pas arriver dans le cadre d'un appel sur /now sauf en cas d'erreur de remontée de l'information officielle)
      * - 1: tarif bleu
@@ -115,6 +124,18 @@ class TempsReel
     public function setLibTarif(string $libTarif): static
     {
         $this->libTarif = $libTarif;
+
+        return $this;
+    }
+
+    public function getApplicableIn(): ?int
+    {
+        return $this->applicableIn;
+    }
+    
+    public function setApplicableIn(int $applicableIn): static
+    {
+        $this->applicableIn = $applicableIn;
 
         return $this;
     }
