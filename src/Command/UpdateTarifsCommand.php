@@ -4,12 +4,11 @@ namespace App\Command;
 
 use App\Entity\Tarification;
 use App\Repository\TarificationRepository;
+use DateTimeImmutable;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
-use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
-use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 
@@ -26,26 +25,36 @@ use Symfony\Component\Console\Style\SymfonyStyle;
 )]
 class UpdateTarifsCommand extends Command
 {
-    
+
+    /**
+     * Gardée pour l'historique, format json, pas mis à jour régulièrement
+     */
     private const GOUV_URL = "https://tabular-api.data.gouv.fr/api/resources/0c3d1d36-c412-4620-8566-e5cbb4fa2b5a/data/?page_size=1&P_SOUSCRITE__exact=6&__id__sort=desc";
+
+    /**
+     * Format CSV, utilisé depuis février 2026
+     */
+    private const RTE_URL = "https://www.cre.fr/fileadmin/Documents/Open_data/Marches_de_detail/Option_Tempo.csv";
 
     public function __construct(private TarificationRepository $tarificationRepository, private EntityManagerInterface $em)
     {
         parent::__construct();
     }
 
-    protected function configure(): void
-    {
-    }
+    protected function configure(): void {}
 
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $io = new SymfonyStyle($input, $output);
-        
-        $ch = curl_init(self::GOUV_URL);
+
+        $ch = curl_init(self::RTE_URL);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($ch, CURLOPT_TIMEOUT, 10);
         curl_setopt($ch, CURLOPT_FAILONERROR, true);
+        curl_setopt($ch, CURLOPT_USERAGENT, 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36');
+        curl_setopt($ch, CURLOPT_HTTPHEADER, [
+            'Accept: */*',
+        ]);
 
         $response = curl_exec($ch);
 
@@ -53,73 +62,85 @@ class UpdateTarifsCommand extends Command
             $io->error('Erreur lors de la récupération des tarifs: ' . curl_error($ch));
             $data = null;
         } else {
-            $data = json_decode($response, true);
-            if (json_last_error() !== JSON_ERROR_NONE) {
-                $io->error('Erreur de décodage JSON: ' . json_last_error_msg());
-                $data = null;
-            }
+            $data = $this->getLastRowFromCSV($response);
         }
         curl_close($ch);
 
-        if(! $data){
+        if (! is_array($data) || count($data) != 17) {
+            $io->error('Le fichier CSV a changé de format ou est vide. Aucune mise à jour effectuée.');
             return Command::FAILURE;
         }
 
-        if(! isset($data['data'], $data['data'][0])){
-            $io->error('Aucune donnée tarifaire disponible.');
+        // On vérifie que la date de début est inférieure ou égale à aujourd'hui
+        // (reçue au format JJ/MM/AAAA)
+        $dateDebut = DateTimeImmutable::createFromFormat('d/m/Y', $data[0]);
+        if ($dateDebut === false) {
+            $io->error('Date de début du tarif au format inattendu: ' . $data[0] . '. Aucune mise à jour effectuée.');
             return Command::FAILURE;
         }
+        if ($dateDebut > new DateTimeImmutable('today')) {
+            $io->warning('Le tarif avec date de début ' . $dateDebut->format('Y-m-d') . ' n\'est pas encore applicable. Aucune mise à jour effectuée.');
+            return Command::SUCCESS;
+        }
 
-        $tarifGouv = $data['data'][0];
-        $idTarif = (int) $tarifGouv['__id'];
-        if($tarifGouv['DATE_FIN'] !== null && $tarifGouv['DATE_FIN'] < date('Y-m-d')){
-            $io->error('Le tarif avec l\'ID ' . $idTarif . ' est expiré.');
-            return Command::FAILURE;
+        // On vérifie que la date de fin est vide ou dans le futur
+        $dateFin = DateTimeImmutable::createFromFormat('d/m/Y', $data[1]);
+        if ($dateFin !== false && $dateFin < new DateTimeImmutable('today')) {
+            $io->warning('Le tarif avec date de fin ' . $dateFin->format('Y-m-d') . ' est expiré. Aucune mise à jour effectuée.');
+            return Command::SUCCESS;
         }
 
         // On a un tarif officiel valable
         // Recherche du tarif local à mettre à jour
         $localTarif = $this->tarificationRepository->findOneBy([]);
-        if(! $localTarif){
+        if (! $localTarif) {
             // Création nouveau tarif (normalement, uniquement la première fois que cette commande est appelée)
             $localTarif = new Tarification();
             $this->em->persist($localTarif);
         }
 
-        if($localTarif->isTarifForce() && $localTarif->getDataGouvId() == $idTarif){
-            // Ce tarif gouvernemental a été modifié localement, on ne tient plus compte de ses données
-            $io->warning('Le tarif avec l\'ID ' . $idTarif . ' a été modifié localement. Aucune mise à jour effectuée.');
-            return Command::SUCCESS;
-        }
-
-        // Attention: la date debut dans les données source est au format AAAA-JJ-MM (inversion mois et année)
-        // Bug signalé, mais en attendant on inverse nous-même
-        // TODO traitement à retirer dès correction de la donnée source
-        if (preg_match('/^(\d{4})-(\d{2})-(\d{2})$/', $tarifGouv['DATE_DEBUT'], $matches)) {
-            // $matches[1]=année, [2]=jour, [3]=mois
-            $tarifGouv['DATE_DEBUT'] = sprintf('%s-%s-%s', $matches[1], $matches[3], $matches[2]);
-        }
-
-        // On ignore la mise à jour si le tarif n'est pas encore applicable (publication anticipée)
-        if($tarifGouv['DATE_DEBUT'] > date('Y-m-d')){
-            $io->warning('Le tarif avec l\'ID ' . $idTarif . ' n\'est pas encore applicable (date de début: ' . $tarifGouv['DATE_DEBUT'] . '). Aucune mise à jour effectuée.');
+        if ($localTarif->isTarifForce()) {
+            // Le tarif a été forcé localement, on ne tient plus compte des données officielles
+            $io->warning('Le tarif a été modifié localement. Aucune mise à jour effectuée.');
             return Command::SUCCESS;
         }
 
         // Mise à jour du tarif et enregistrement
-        $localTarif->setDataGouvId($idTarif);
-        $localTarif->setDateDebut($tarifGouv['DATE_DEBUT']);
-        $localTarif->setBleuHC((float) $tarifGouv['PART_VARIABLE_HCBleu_TTC']);
-        $localTarif->setBleuHP((float) $tarifGouv['PART_VARIABLE_HPBleu_TTC']);
-        $localTarif->setBlancHC((float) $tarifGouv['PART_VARIABLE_HCBlanc_TTC']);
-        $localTarif->setBlancHP((float) $tarifGouv['PART_VARIABLE_HPBlanc_TTC']);
-        $localTarif->setRougeHC((float) $tarifGouv['PART_VARIABLE_HCRouge_TTC']);
-        $localTarif->setRougeHP((float) $tarifGouv['PART_VARIABLE_HPRouge_TTC']);
+        $localTarif->setDataGouvId(0); // Plus dispo depuis qu'on a changé de source en février 2026
+        $localTarif->setDateDebut($dateDebut->format('Y-m-d'));
+        $localTarif->setBleuHC((float) str_replace(',', '.', $data[6]));
+        $localTarif->setBleuHP((float) str_replace(',', '.', $data[8]));
+        $localTarif->setBlancHC((float) str_replace(',', '.', $data[10]));
+        $localTarif->setBlancHP((float) str_replace(',', '.', $data[12]));
+        $localTarif->setRougeHC((float) str_replace(',', '.', $data[14]));
+        $localTarif->setRougeHP((float) str_replace(',', '.', $data[16]));
 
         $this->em->flush();
 
         $io->success('Tarifs mis à jour.');
 
         return Command::SUCCESS;
+    }
+
+    /**
+     * Retourne la dernière ligne d'une chaîne CSV, ou null si le CSV est vide ou invalide.
+     * @param string $csvContent Le contenu CSV à analyser
+     * @return array|null La dernière ligne du CSV sous forme de tableau, ou null
+     */
+    private function getLastRowFromCSV(string $csvContent): ?array
+    {
+        $lastRow = null;
+
+        $handle = fopen('php://temp', 'r+');
+        fwrite($handle, $csvContent);
+        rewind($handle);
+
+        while (($row = fgetcsv($handle, 0, ';')) !== false) {
+            $lastRow = $row;
+        }
+
+        fclose($handle);
+
+        return $lastRow;
     }
 }
